@@ -2,6 +2,7 @@
 
 namespace pavlatch;
 
+use GuzzleHttp\Exception\GuzzleException;
 use pavlatch\Exception\ClientException;
 
 /**
@@ -51,42 +52,52 @@ class Client
 
     public function upload(string $filename, string $source): bool
     {
-        $response = $this->client->request('POST',
-            $this->serverUrl,
+        $code = $this->request([
             [
-                'multipart' => [
-                    [
-                        'name' => 'FileContents',
-                        'contents' => file_get_contents(__DIR__ . '/../' . $source),
-                        'filename' => $filename,
-                    ],
-                    [
-                        'name' => 'secureKey',
-                        'contents' => $this->secureKey,
-                    ]
-                ],
-            ]
-        );
+                'name' => 'FileContents',
+                'contents' => file_get_contents(__DIR__ . '/../' . $source),
+                'filename' => $filename,
+            ],
+        ]);
 
-        var_dump($response->getBody()->getContents());
-
-        return $response->getStatusCode() === 200;
+        return $code === 201;
     }
 
+    public function exist(string $filename): bool
+    {
+        $code = $this->request([
+            [
+                'name' => 'action',
+                'contents' => 'exist',
+            ],
+            [
+                'name' => 'filename',
+                'contents' => $filename,
+            ],
+        ]);
 
-//    /**
-//     * Create a new stream based on the input type.
-//     *
-//     * @param resource|string|StreamInterface $source path to a local file, resource or stream
-//     *
-//     * @return StreamInterface
-//     */
-//    protected function sourceToStream($source): StreamInterface
-//    {
-//        if (is_string($source)) {
-//            $source = Psr7\try_fopen($source, 'r+');
-//        }
-//
-//        return Psr7\stream_for($source);
-//    }
+        return $code === 204;
+    }
+
+    private function request(array $data): ?int
+    {
+        try {
+            $response = $this->client->request('POST',
+                $this->serverUrl,
+                [
+                    'multipart' => array_merge(
+                        [[
+                            'name' => 'secureKey',
+                            'contents' => $this->secureKey,
+                        ]],
+                        $data
+                    )
+                ]
+            );
+        } catch (GuzzleException $e) {
+            return null;
+        }
+
+        return $response->getStatusCode();
+    }
 }

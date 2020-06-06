@@ -11,4 +11,5 @@ $client = new \pavlatch\Client([
     'secureKey' => '6a4068f2-2cde-494d-90e1-08ba5827a677',
 ]);
 
-var_dump($client->upload('test.jpg', 'comment_15912838670aXfNqsKGkw0hexCtUwR7H.jpg'));
+var_dump($client->upload('1112.jpg', 'comment_15912838670aXfNqsKGkw0hexCtUwR7H.jpg'));
+//var_dump($client->exist('asdasd.jpg',));
