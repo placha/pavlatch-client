@@ -1,5 +1,20 @@
 # Pavlatch Client
 
+## Setup
+```
+{
+  "require": {
+    "kacperplacha/pavlatch-client": "^1.0"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/kacperplacha/pavlatch-client.git"
+    }
+  ]
+}
+```
+
 ## Example of usage
 ```
 include __DIR__ . '/vendor/autoload.php';
