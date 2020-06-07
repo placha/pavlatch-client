@@ -57,7 +57,7 @@ class Client
         $code = $this->request([
             [
                 'name' => 'FileContents',
-                'contents' => file_get_contents(__DIR__ . '/../' . $source),
+                'contents' => file_get_contents($source),
                 'filename' => $filename,
             ],
         ]);
