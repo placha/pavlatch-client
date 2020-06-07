@@ -9,10 +9,12 @@ use pavlatch\Exception\ClientException;
  * Class Client
  *
  * Usage:
- * new pavlatch\Client([
- *     'url' => 'http://127.0.0.1/',
+ * $client = new pavlatch\Client([
+ *     'serverUrl' => 'http://127.0.0.1/',
  *     'secureKey' => '6a4068f2-2cde-494d-90e1-08ba5827a677'
  * ])
+ * $client->upload();
+ * $client->exist();
  *
  * @package pavlatch
  */
