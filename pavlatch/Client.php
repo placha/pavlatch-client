@@ -23,6 +23,11 @@ class Client
     /**
      * @var string
      */
+    public $lastError;
+
+    /**
+     * @var string
+     */
     private $serverUrl;
 
     /**
@@ -97,6 +102,8 @@ class Client
                 ]
             );
         } catch (GuzzleException $e) {
+            $this->lastError = $e->getMessage();
+
             return null;
         }
 
