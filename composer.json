@@ -1,6 +1,6 @@
 {
-  "name": "placha/pavlatch",
-  "description": "Simple file storage API",
+  "name": "kacperplacha/pavlatch-client",
+  "description": "Simple file storage API client",
   "minimum-stability": "stable",
   "license": "MIT",
   "authors": [
