@@ -3,16 +3,12 @@
 namespace pavlatch;
 
 use GuzzleHttp\Exception\GuzzleException;
-use pavlatch\Exception\ClientException;
 
 /**
  * Class Client
  *
  * Usage:
- * $client = new pavlatch\Client([
- *     'serverUrl' => 'http://127.0.0.1/',
- *     'secureKey' => '6a4068f2-2cde-494d-90e1-08ba5827a677'
- * ])
+ * $client = new pavlatch\Client('http://127.0.0.1/','6a4068f2-2cde-494d-90e1-08ba5827a677');
  * $client->upload();
  * $client->exist();
  *
@@ -40,21 +36,10 @@ class Client
      */
     private $client;
 
-    /**
-     * Client constructor.
-     * @param array $serverConfig
-     * @throws ClientException
-     */
-    public function __construct(array $serverConfig)
+    public function __construct(string $serverUrl, string $secureKey)
     {
-        $this->serverUrl = $serverConfig['serverUrl'] ?? null;
-        $this->secureKey = $serverConfig['secureKey'] ?? null;
-
-        if ($this->serverUrl === null || $this->secureKey === null) {
-            throw new ClientException('Invalid configuration.');
-        }
-
-        $this->client = new \GuzzleHttp\Client();
+        $this->serverUrl = $serverUrl;
+        $this->secureKey = $secureKey;
     }
 
     public function upload(string $filename, string $source): bool
@@ -89,9 +74,11 @@ class Client
     private function request(array $data): ?int
     {
         try {
-            $response = $this->client->request('POST',
-                $this->serverUrl,
+            $response = $this->getClient()->request('POST', '',
                 [
+                    'headers' => [
+                        'User-Agent' => 'Pavlatch Guzzle',
+                    ],
                     'multipart' => array_merge(
                         [[
                             'name' => 'secureKey',
@@ -108,5 +95,14 @@ class Client
         }
 
         return $response->getStatusCode();
+    }
+
+    private function getClient(): \GuzzleHttp\Client
+    {
+        if ($this->client === null) {
+            $this->client = new \GuzzleHttp\Client(['base_uri' => $this->serverUrl]);
+        }
+
+        return $this->client;
     }
 }

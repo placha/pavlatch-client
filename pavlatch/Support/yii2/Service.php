@@ -26,25 +26,21 @@ class Service extends Component implements SupportInterface
 
     public function init()
     {
-        $this->client = new Client([
-            'serverUrl' => $this->serverUrl,
-            'secureKey' => $this->secureKey,
-        ]);
+        $this->client = new Client($this->serverUrl, $this->secureKey);
     }
 
     public function upload(string $filename, string $source): bool
     {
-        $result = $this->client->upload($filename, $source);
-        Yii::debug('Pavlatch: ' . $this->client->lastError);
-
-        return $result;
+        return $this->client->upload($filename, $source);
     }
 
     public function exist(string $filename): bool
     {
-        $result = $this->client->exist($filename);
-        Yii::debug('Pavlatch: ' . $this->client->lastError);
+        return $this->client->exist($filename);
+    }
 
-        return $result;
+    public function getLastError(): ?string
+    {
+        return $this->client->lastError;
     }
 }
