@@ -4,7 +4,7 @@
 ```
 {
   "require": {
-    "kacperplacha/pavlatch-client": "^1.0"
+    "kacperplacha/pavlatch-client": "^2.0.0"
   },
   "repositories": [
     {

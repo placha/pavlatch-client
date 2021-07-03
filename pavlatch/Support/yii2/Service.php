@@ -9,20 +9,9 @@ use yii\base\Component;
 
 class Service extends Component implements SupportInterface
 {
-    /**
-     * @var string
-     */
-    public $serverUrl;
-
-    /**
-     * @var string
-     */
-    public $secureKey;
-
-    /**
-     * @var Client
-     */
-    private $client;
+    public string $serverUrl;
+    public string $secureKey;
+    private Client $client;
 
     public function init()
     {

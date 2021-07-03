@@ -16,25 +16,10 @@ use GuzzleHttp\Exception\GuzzleException;
  */
 class Client
 {
-    /**
-     * @var string
-     */
-    public $lastError;
-
-    /**
-     * @var string
-     */
-    private $serverUrl;
-
-    /**
-     * @var string
-     */
-    private $secureKey;
-
-    /**
-     * @var \GuzzleHttp\Client
-     */
-    private $client;
+    public string $lastError;
+    private string $serverUrl;
+    private string $secureKey;
+    private \GuzzleHttp\Client $client;
 
     public function __construct(string $serverUrl, string $secureKey)
     {
@@ -44,63 +29,54 @@ class Client
 
     public function upload(string $filename, string $source): bool
     {
-        $code = $this->request([
-            [
-                'name' => 'FileContents',
-                'contents' => file_get_contents($source),
-                'filename' => $filename,
-            ],
-        ]);
-
-        return $code === 201;
-    }
-
-    public function exist(string $filename): bool
-    {
-        $code = $this->request([
-            [
-                'name' => 'action',
-                'contents' => 'exist',
-            ],
-            [
-                'name' => 'filename',
-                'contents' => $filename,
-            ],
-        ]);
-
-        return $code === 204;
-    }
-
-    private function request(array $data): ?int
-    {
         try {
-            $response = $this->getClient()->request('POST', '',
+            $response = $this->getClient()->post('',
                 [
-                    'headers' => [
-                        'User-Agent' => 'Pavlatch Guzzle',
-                    ],
-                    'multipart' => array_merge(
-                        [[
+                    'multipart' => [
+                        [
                             'name' => 'secureKey',
                             'contents' => $this->secureKey,
-                        ]],
-                        $data
-                    )
+                        ],
+                        [
+                            'name' => 'FileContents',
+                            'contents' => file_get_contents($source),
+                            'filename' => $filename,
+                        ],
+                    ],
                 ]
             );
         } catch (GuzzleException $e) {
             $this->lastError = $e->getMessage();
 
-            return null;
+            return false;
         }
 
-        return $response->getStatusCode();
+
+        return $response->getStatusCode() === 201;
+    }
+
+    public function exist(string $filename): bool
+    {
+        try {
+            $response = $this->getClient()->head($filename);
+        } catch (GuzzleException $e) {
+            $this->lastError = $e->getMessage();
+
+            return false;
+        }
+
+        return $response->getStatusCode() === 204;
     }
 
     private function getClient(): \GuzzleHttp\Client
     {
         if ($this->client === null) {
-            $this->client = new \GuzzleHttp\Client(['base_uri' => $this->serverUrl]);
+            $this->client = new \GuzzleHttp\Client([
+                'base_uri' => $this->serverUrl,
+                'headers' => [
+                    'User-Agent' => 'Pavlatch Guzzle',
+                ],
+            ]);
         }
 
         return $this->client;
