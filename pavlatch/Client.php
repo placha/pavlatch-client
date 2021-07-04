@@ -2,6 +2,7 @@
 
 namespace pavlatch;
 
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
@@ -17,14 +18,18 @@ use GuzzleHttp\Exception\GuzzleException;
 class Client
 {
     public string $lastError;
-    private string $serverUrl;
     private string $secureKey;
-    private \GuzzleHttp\Client $client;
+    private GuzzleClient $client;
 
     public function __construct(string $serverUrl, string $secureKey)
     {
-        $this->serverUrl = $serverUrl;
         $this->secureKey = $secureKey;
+        $this->client = new GuzzleClient([
+            'base_uri' => $serverUrl,
+            'headers' => [
+                'User-Agent' => 'Pavlatch Guzzle',
+            ],
+        ]);
     }
 
     public function upload(string $filename, string $source): bool
@@ -68,17 +73,8 @@ class Client
         return $response->getStatusCode() === 204;
     }
 
-    private function getClient(): \GuzzleHttp\Client
+    private function getClient(): GuzzleClient
     {
-        if ($this->client === null) {
-            $this->client = new \GuzzleHttp\Client([
-                'base_uri' => $this->serverUrl,
-                'headers' => [
-                    'User-Agent' => 'Pavlatch Guzzle',
-                ],
-            ]);
-        }
-
         return $this->client;
     }
 }
